@@ -1,8 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-// import 'package:sqflite/sqflite.dart';
-import 'package:zoog_flutter_crud/pages/home_page.dart';
+import 'package:zoog_flutter_crud/firebase_options.dart';
+import 'package:zoog_flutter_crud/pages/signin_page.dart';
 
-void main() async {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -18,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Poppins',
       ),
-      home: const HomePage(),
+      home: SignInPage(),
     );
   }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "103783745615",
+    "project_id": "zt-authcrud",
+    "storage_bucket": "zt-authcrud.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103783745615:android:cbdfdfaa3db0d69384823a",
+        "android_client_info": {
+          "package_name": "com.example.zoog_flutter_crud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl6v0YrhwW63U4kd_DNATOx20z-mNslzY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
