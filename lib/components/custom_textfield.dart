@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
-  final controller;
+class CustomTextField extends StatefulWidget {
+  final TextEditingController? controller;
   final String hintText;
   final bool obscureText;
 
@@ -13,12 +13,26 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose(); // Dispose the FocusNode to prevent memory leaks.
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
-        controller: controller,
-        obscureText: obscureText,
+        focusNode: _focusNode,
+        controller: widget.controller,
+        obscureText: widget.obscureText,
         decoration: InputDecoration(
             enabledBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.white),
@@ -30,7 +44,7 @@ class CustomTextField extends StatelessWidget {
             ),
             fillColor: const Color.fromARGB(255, 174, 138, 240),
             filled: true,
-            hintText: hintText,
+            hintText: widget.hintText,
             hintStyle: const TextStyle(
               color: Color.fromARGB(199, 209, 202, 202),
               fontSize: 18,

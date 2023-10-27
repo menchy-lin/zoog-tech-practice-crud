@@ -1,108 +1,47 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zoog_flutter_crud/components/custom_button.dart';
 import 'package:zoog_flutter_crud/components/custom_square_tile.dart';
 import 'package:zoog_flutter_crud/components/custom_textfield.dart';
-import 'package:zoog_flutter_crud/data/sample_data.dart';
+import 'package:zoog_flutter_crud/firebase_auth/firebase_auth_service.dart';
+// import 'package:zoog_flutter_crud/pages/home_page.dart';
 import 'package:zoog_flutter_crud/pages/signin_page.dart';
 
-class SignUpPage extends StatelessWidget {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
-  SignUpPage({super.key});
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
 
-  void signUp(BuildContext context) {
+class _SignUpPageState extends State<SignUpPage> {
+  final FirebaseAuthService _auth = FirebaseAuthService();
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  // final _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void signUp() async {
     String username = _usernameController.text;
+    String email = _emailController.text;
     String password = _passwordController.text;
-    String confirmPassword = _confirmPasswordController.text;
 
-    if (SampleData.users.containsKey(username)) {
-      showDialog<void>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text(
-              'Error',
-              style: TextStyle(color: Colors.red),
-            ),
-            content: const Text('User already exists. Please sign in.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, '/signin');
-                },
-                child: const Text('Sign In'),
-              ),
-            ],
-          );
-        },
-      );
-    } else if (password != confirmPassword) {
-      showDialog<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text(
-                'Error',
-                style: TextStyle(color: Colors.red),
-              ),
-              content: const Text('Password do not match. Please try again.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                )
-              ],
-            );
-          });
-    } else if (username == '' && password == '' && confirmPassword == '') {
-      showDialog<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text(
-                'Error',
-                style: TextStyle(color: Colors.red),
-              ),
-              content: const Text('Please enter your username and password.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                )
-              ],
-            );
-          });
+    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+
+    if (user != null) {
+      print('User is successfully created!');
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
-      SampleData.users[username] = password;
-      showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text(
-              'Success',
-              style: TextStyle(color: Colors.green),
-            ),
-            content:
-                const Text('User registered successfully. Please sign in.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, '/signin');
-                },
-                child: const Text('Sign In'),
-              ),
-            ],
-          );
-        },
-      );
+      print('Some error occurred!');
     }
   }
 
@@ -143,17 +82,17 @@ class SignUpPage extends StatelessWidget {
                       obscureText: false),
                   const SizedBox(height: 10),
                   CustomTextField(
+                      controller: _emailController,
+                      hintText: 'Email',
+                      obscureText: false),
+                  const SizedBox(height: 10),
+                  CustomTextField(
                       controller: _passwordController,
                       hintText: 'Password',
                       obscureText: true),
                   const SizedBox(height: 10),
-                  CustomTextField(
-                      controller: _confirmPasswordController,
-                      hintText: 'Confirm Password',
-                      obscureText: true),
-                  const SizedBox(height: 10),
                   CustomButton(
-                    onTap: () => signUp(context),
+                    onTap: signUp,
                     text: ('Sign Up'),
                   ),
                   const SizedBox(height: 35),
@@ -191,12 +130,13 @@ class SignUpPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // google button
-                      CustomSquareTile(imagePath: 'assets/images/google.png'),
+                      CustomSquareTile(
+                          imagePath: 'lib/assets/images/google.png'),
 
                       SizedBox(width: 25),
 
                       // facebook button
-                      CustomSquareTile(imagePath: 'assets/images/fb.png')
+                      CustomSquareTile(imagePath: 'lib/assets/images/fb.png')
                     ],
                   ),
                   const SizedBox(height: 25),
@@ -223,7 +163,7 @@ class SignUpPage extends StatelessWidget {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignInPage(),
+                              builder: (context) => const SignInPage(),
                             ),
                           ),
                         ),

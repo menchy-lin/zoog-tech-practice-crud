@@ -4,6 +4,8 @@ import 'package:zoog_flutter_crud/db/sql_helper.dart';
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
 
+  static const String routeName = '/users';
+
   @override
   State<UsersPage> createState() => _UsersPageState();
 }
@@ -119,6 +121,7 @@ class _UsersPageState extends State<UsersPage> {
     await SQLHelper.deleteItem(id);
 
 // scaffoldMessengerKey.currentState?.showSnackBar(const SnackBar(
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Successfully deleted a journal!'),
     ));

@@ -1,61 +1,97 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zoog_flutter_crud/components/custom_button.dart';
 import 'package:zoog_flutter_crud/components/custom_square_tile.dart';
 import 'package:zoog_flutter_crud/components/custom_textfield.dart';
-import 'package:zoog_flutter_crud/data/sample_data.dart';
-import 'package:zoog_flutter_crud/pages/home_page.dart';
+import 'package:zoog_flutter_crud/firebase_auth/firebase_auth_service.dart';
 import 'package:zoog_flutter_crud/pages/signup_page.dart';
 
-class SignInPage extends StatelessWidget {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
 
-  SignInPage({super.key});
+  @override
+  State<SignInPage> createState() => _SignInPageState();
+}
 
-  void signIn(BuildContext context) {
-    String username = _usernameController.text;
+class _SignInPageState extends State<SignInPage> {
+  final FirebaseAuthService _auth = FirebaseAuthService();
+
+  // Text editing controller
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Method - sign in
+  void signIn() async {
+    String email = _emailController.text;
     String password = _passwordController.text;
 
-    if (SampleData.users.containsKey(username) &&
-        SampleData.users[username] == password) {
-      // showDialog(
-      //   context: context,
-      //   builder: (context) {
-      //     return AlertDialog(
-      //       title: const Text('Success'),
-      //       content: const Text('Sign in successful.'),
-      //       actions: [
-      //         TextButton(
-      //           onPressed: () {
-      //             Navigator.of(context).pop();
-      //           },
-      //           child: const Text('OK'),
-      //         ),
-      //       ],
-      //     );
-      //   },
-      // );
-      Navigator.pushNamed(context, HomePage.routeName);
+    // Show loading circle
+    // showDialog(
+    //   context: context,
+    //   builder: (context) {
+    //     return const Center(
+    //       child: CircularProgressIndicator(),
+    //     );
+    //   },
+    // );
+
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+    if (user != null) {
+      print('User is successfully signed in!');
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content:
-                const Text('Invalid username or password. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      print('Some error occurred!');
     }
+    // try {
+    //   await FirebaseAuth.instance
+    //       .signInWithEmailAndPassword(email: email, password: password);
+
+    //   // Remove CircularProgressIndicator() when user successfully signed in
+    //   // Navigator.pop(context);
+    // } on FirebaseAuthException catch (e) {
+    //   // Remove CircularProgressIndicator() when user failed to signed in
+    //   // Navigator.pop(context);
+
+    //   if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+    //     // wrongEmailMessage();
+    //     print('Invalid email or password');
+    //   } else {
+    //     print('An error occurred ${e.code}');
+    //     // wrongPasswordMessage();
+    //   }
+    // }
+  }
+
+  // Method - wrong email alert dialog
+  void wrongEmailMessage() {
+    showDialog(
+      context: context,
+      builder: (builder) {
+        return const AlertDialog(
+          title: Text('Wrong Email'),
+        );
+      },
+    );
+  }
+
+  // Method - wrong email alert dialog
+  void wrongPasswordMessage() {
+    showDialog(
+      context: context,
+      builder: (builder) {
+        return const AlertDialog(
+          title: Text('Wrong Password'),
+        );
+      },
+    );
   }
 
   @override
@@ -82,7 +118,7 @@ class SignInPage extends StatelessWidget {
                   const SizedBox(height: 40),
                   Container(
                       padding: const EdgeInsets.only(right: 15.0),
-                      child: Image.asset('assets/images/flutter.png')),
+                      child: Image.asset('lib/assets/images/flutter.png')),
                   const SizedBox(height: 40),
                   const Text(
                     'Welcome to the Flutter!',
@@ -93,8 +129,8 @@ class SignInPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   CustomTextField(
-                      controller: _usernameController,
-                      hintText: 'Username',
+                      controller: _emailController,
+                      hintText: 'Email',
                       obscureText: false),
                   const SizedBox(height: 10),
                   CustomTextField(
@@ -119,7 +155,7 @@ class SignInPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   CustomButton(
-                    onTap: () => signIn(context),
+                    onTap: () => signIn(),
                     text: ('Sign In'),
                   ),
                   const SizedBox(height: 35),
@@ -157,12 +193,13 @@ class SignInPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // google button
-                      CustomSquareTile(imagePath: 'assets/images/google.png'),
+                      CustomSquareTile(
+                          imagePath: 'lib/assets/images/google.png'),
 
                       SizedBox(width: 25),
 
                       // facebook button
-                      CustomSquareTile(imagePath: 'assets/images/fb.png')
+                      CustomSquareTile(imagePath: 'lib/assets/images/fb.png')
                     ],
                   ),
                   const SizedBox(height: 25),
@@ -189,7 +226,7 @@ class SignInPage extends StatelessWidget {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignUpPage(),
+                              builder: (context) => const SignUpPage(),
                             ),
                           ),
                         ),

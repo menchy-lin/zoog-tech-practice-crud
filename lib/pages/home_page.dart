@@ -1,13 +1,26 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required String username});
+  HomePage({super.key});
 
-  static const String routeName = '/home';
+  // static const String routeName = '/home';
+
+  final user = FirebaseAuth.instance.currentUser!;
+
+  // Method - sign out
+  void signOut() {
+    FirebaseAuth.instance.signOut();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: signOut, icon: const Icon(Icons.login_rounded))
+        ],
+      ),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -23,29 +36,14 @@ class HomePage extends StatelessWidget {
         ),
         child: SafeArea(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.pushReplacementNamed(context, '/signin'),
-                child: const Icon(Icons.arrow_back_rounded),
-              ),
-              const Align(
-                alignment: Alignment.center,
-                child: Row(
-                  children: [
-                    Text(
-                      'Hello World!',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Icon(
-                      Icons.accessibility_new_rounded,
-                      color: Colors.white,
-                      size: 25,
-                    ),
-                  ],
-                ),
+              Text(
+                "Hello ${user.email!}",
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
